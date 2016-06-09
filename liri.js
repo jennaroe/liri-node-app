@@ -177,11 +177,13 @@ var getRandom = function() {
         data = data.split(',');
         //console.log(data);
 
-        // action = data[0];
-        
-        // value = data[1];
-        
-        action(data[0], data[1]);
+        if (data.length == 2){
+            action(data[0], data[1]);
+        }else if (data.length == 1){
+            action(data[0]);
+        }
+
+
     }); // end fs.readFile
 };
 
