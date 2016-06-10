@@ -42,26 +42,26 @@ var getTweets = function() {
     client.get('statuses/user_timeline.json', params, function(error, tweets, response){
 
   		    if (!error) {
-                // console.log(tweets);
-                for (var i = 0; i < 20; i++) {
-                var tweetTime = tweets[i].created_at;
-                var tweetText = tweets[i].text;
-                console.log(" ")//Empty
-                console.log(tweetTime);
-                console.log(tweetText);
+                for (var i = 0; i < tweets.length; i++) {
+
+                console.log(" ")
+                console.log(tweets[i].created_at);
+                console.log(" ")
+                console.log(tweets[i].text);
                 console.log('==============================================')
+                
 
-                }
+        //var tweetData = tweets[i].created_at + '\n' + tweets[i].text;
 
-                     } 
-
-        var tweetData = tweetTime + '\n' + tweetText;
-         fs.appendFileSync('log.txt', '\n' + tweetData + '\n', 'utf8', function(err) {
+         fs.appendFileSync('log.txt', '\n' + tweets[i].created_at + '\n' + tweets[i].text + '\n', 'utf8', function(err) {
             if (err) throw err;
         })
-        
+    }
+
+        }       
     });
-}
+};
+
 
 var getSong = function(song) {
 
