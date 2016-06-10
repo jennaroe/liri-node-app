@@ -13,16 +13,16 @@ var cases = process.argv[2];
 var action = function(caseData, functionData){
 switch(caseData){
     case 'my-tweets':
-        getTweets();
+        getTweets(functionData);
         break;
     case 'spotify-this-song':
-        getSong();
+        getSong(functionData);
         break;
     case 'movie-this':
         getMovie(functionData);
         break;
     case 'do-what-it-says':
-        getRandom();
+        getRandom(functionData);
         break;
     default:
     	console.log('How can LIRI help?');
@@ -35,36 +35,18 @@ switch(caseData){
 var getTweets = function() {
 	var client = new Twitter(keys.twitterKeys);
 
-
-    // client.get('statuses/user_timeline.json?screen_name=jenesis15&count=20', {q: 'node.js'}, function(err, tweets, response){
-
-    //     if(err){
-    //         return console.log(err);
-    //     }
-
-    //     if(client){
-
-    //         obj = tweets;
-
-    //         for(var prop in obj){
-    //             console.log(obj[prop].created_at + "\n");
-    //             console.log("Tweet: " + obj[prop].text);
-    //             console.log('==============================================')
-    //         }
-
-    //     }
-    // });
-var params = {screen_name: 'jenesis15',
+    var params = {screen_name: 'jenesis15',
                 count: 20  
               };
 
-client.get('statuses/user_timeline.json', params, function(error, tweets, response){
+    client.get('statuses/user_timeline.json', params, function(error, tweets, response){
 
-  		if (!error) {
+  		    if (!error) {
                 // console.log(tweets);
                 for (var i = 0; i < 20; i++) {
                 var tweetTime = tweets[i].created_at;
                 var tweetText = tweets[i].text;
+                console.log(" ")//Empty
                 console.log(tweetTime);
                 console.log(tweetText);
                 console.log('==============================================')
@@ -77,36 +59,30 @@ client.get('statuses/user_timeline.json', params, function(error, tweets, respon
          fs.appendFileSync('log.txt', '\n' + tweetData + '\n', 'utf8', function(err) {
             if (err) throw err;
         })
-        //End Write Spotify
-        });
+        
+    });
 }
 
 var getSong = function(song) {
 
-    var song = process.argv[3];
-
     if (song == undefined) {
-        song = "What's my Age Again?"
+        song = process.argv[3];
+    };
+
+    if (song == undefined){
+        song = "What's my Age Again?";
     };
     
     spotify.search({type: 'track', query: song}, function(err, data) {
 
-        console.log(" ")//Empty
+        console.log(" ")
         console.log("Song: " + data.tracks.items[0].name)
         console.log("Album: " + data.tracks.items[0].album.name)
-
-        var numOfArtists = data.tracks.items[0].artists.length
-        var artistArray = []
-
-        for (var i = 0; i < numOfArtists; i++) {
-            artistArray.push(data.tracks.items[0].artists[i].name)
-        }
-
-        console.log("Artist(s): " + artistArray)
+        console.log("Artist(s): " + data.tracks.items[0].artists[0].name)
         console.log("Preview URL: " + data.tracks.items[0].preview_url)
 
         //Write Spotify
-        var spotifyData = "Song: " + data.tracks.items[0].name + '\n' + "Album: " + data.tracks.items[0].album.name + '\n' + "Artist(s): " + artistArray + '\n' + "Preview URL: " + data.tracks.items[0].preview_url + '\n';
+        var spotifyData = "Song: " + data.tracks.items[0].name + '\n' + "Album: " + data.tracks.items[0].album.name + '\n' + "Artist(s): " + data.tracks.items[0].artists[0].name + '\n' + "Preview URL: " + data.tracks.items[0].preview_url + '\n';
         fs.appendFileSync('log.txt', '\n' + spotifyData + '\n', 'utf8', function(err) {
             if (err) throw err;
         })
@@ -121,21 +97,18 @@ var getMovie = function() {
 
     // request(search, function (error, response, body){
         var search = process.argv;
-
+        var three = process.argv[3]
         // Create an empty variable for holding the movie name
         var movieName = "";
 
-        if (search === undefined){
-            search = "Mr. Nobody";
+        if (three === undefined){
+            movieName = "Mr. Nobody";
         };
 
-        // Loop through all the words in the node argument
-        // And do a little for-loop magic to handle the inclusion of "+"s
         for (var i=3; i<search.length; i++){
             if (i>3 && i< search.length){
                 movieName = movieName + "+" + search[i];
             } 
-
             else {
                 movieName = movieName + search[i];
             }
@@ -149,6 +122,7 @@ var getMovie = function() {
 
         request(url, function (error, response, body) {
                 if (!error && response.statusCode == 200){
+                    // body = JSON.parse(body);
                     console.dir("Title: " + JSON.parse(body)['Title'])
                     console.dir("Release Year: " + JSON.parse(body)["Year"])
                     console.dir("Imdb Rating: " + JSON.parse(body)['imdbRating'])
@@ -176,13 +150,7 @@ var getRandom = function() {
     fs.readFile('./random.txt', "utf8", function(err, data){
         data = data.split(',');
         //console.log(data);
-
-        if (data.length == 2){
-            action(data[0], data[1]);
-        }else if (data.length == 1){
-            action(data[0]);
-        }
-
+        action(data[0], data[1]);
 
     }); // end fs.readFile
 };
